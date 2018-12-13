@@ -1,0 +1,26 @@
+{
+  "name": "adun",
+  "version": "1.0.0",
+  "description": "my personal website with funny stuff",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArnoldMeng/adun.git"
+  },
+  "keywords": [
+    "adun",
+    "web"
+  ],
+  "author": "ywmeng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ArnoldMeng/adun/issues"
+  },
+  "homepage": "https://github.com/ArnoldMeng/adun#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
