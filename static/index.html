@@ -3,8 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <title>Hello</title>
+    <!--<script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>-->
+    <!--<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>-->
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+    <style type="text/css">
+        td{
+            height: 10px;
+            width: 10px;
+        }
+        .one{
+            background-color: black;
+        }
+        .zero{
+            background-color: pink;
+        }
+    </style>
 </head>
 <body>
 <h1> Hello, Arnold!</h1>
+<div id="content"></div>
+
+
+<script type="text/babel">
+    let contentNode = document.getElementById("content");
+    let HelloWorld = (<h1> Good morning, my lord! </h1>) ;
+    ReactDOM.render(
+        HelloWorld
+        , document.getElementById("content")
+    );
+
+</script>
+
+<div id="xx">
+    <table id="board"></table>
+    <label for="boardLen"></label><input id="boardLen" value="10">
+    <button id="init">init</button>
+    <button id="start">start</button>
+    <button id="stop">stop</button>
+    <button id="run-one">run one</button>
+    <script type="text/javascript">
+        let table = document.getElementById('board');
+        let runner = null;
+        let states = [];
+        let states0 = [];
+        let boardLen = 10;
+        let tds = null;
+        function init() {
+            if(runner != null){
+                clearInterval(runner);
+            }
+            states = [];
+            states0 = [];
+            table.innerHTML = "";
+            boardLen = document.getElementById('boardLen').value;
+            let fragment = document.createDocumentFragment();
+            for(let i = 0; i < boardLen; i++){
+                let row = document.createElement("tr");
+                let sRow = [];
+                let sRow0 = [];
+                for(let j = 0; j < boardLen; j++){
+                    let td = document.createElement('td');
+                    td.className = 'zero';
+                    td.setAttribute("boardX", i.toString());
+                    td.setAttribute("boardY", j.toString());
+                    row.appendChild(td);
+                    sRow.push(false);
+                    sRow0.push(false);
+                }
+                fragment.appendChild(row);
+                states.push(sRow);
+                states0.push(sRow0);
+            }
+            table.appendChild(fragment);
+            tds = table.getElementsByTagName('td');
+        }
+
+        function runOneTime() {
+            let trueCount = 0;
+            for(let i = 0; i < boardLen; i++){
+                for(let j = 0; j < boardLen; j++){
+                    let subCount = -(states[i][j]);
+                    for(let p of [i-1,i,i+1]){
+                        for(let q of [j-1,j,j+1]){
+                            if(p >= 0 && p < boardLen && q >= 0 && q < boardLen && states[p][q]){
+                                subCount += 1;
+                            }
+                        }
+                    }
+                    if (subCount < 2 || subCount > 3){
+                        states0[i][j] = false;
+                    } else if(subCount === 2){
+                        states0[i][j] = states[i][j];
+                    } else {
+                        states0[i][j] = true;
+                    }
+                    // console.log(subCount);
+
+                    if(states[i][j] !== states0[i][j]){
+                        tds[i * boardLen + j].className = states0[i][j] ? 'one' : 'zero';
+                    }
+                }
+            }
+            let tmp = states0;
+            states0 = states;
+            states = tmp;
+        }
+
+        function start(){
+            runner = setInterval(runOneTime, 100);
+        }
+
+        function stop(){
+            clearInterval(runner);
+            runner = null;
+        }
+
+        function handleTableClick(e) {
+            // console.log(e.target,e.target.tagName);
+            if(e.target.tagName === 'TD'){
+                let i = parseInt(e.target.getAttribute("boardX"));
+                let j = parseInt(e.target.getAttribute("boardY"));
+                states[i][j] = !states[i][j];
+                // console.
+                tds[i * boardLen + j].className = states[i][j] ? 'one' : 'zero';
+            }
+            // for(let k = 0; k < boardLen * boardLen; k++){
+            //     if(tds[k] === e.target){
+            //         let i = parseInt(k / boardLen);
+            //         let j = k % boardLen;
+            //         states[i][j] = !states[i][j];
+            //         tds[k].className = states[i][j] ? 'one' : 'zero';
+            //         break;
+            //     }
+            // }
+        }
+
+        document.getElementById('init').addEventListener("click", init);
+        document.getElementById('board').addEventListener("click", handleTableClick);
+        document.getElementById('run-one').addEventListener("click", runOneTime);
+        document.getElementById('start').addEventListener("click", start);
+        document.getElementById('stop').addEventListener("click", stop);
+
+        init();
+    </script>
+</div>
+
 </body>
 </html>
