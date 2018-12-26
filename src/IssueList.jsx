@@ -1,4 +1,7 @@
 import React from 'react';
+import {Link, withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
+import queryString from 'query-string';
 // import 'whatwg-fetch';
 
 import IssueAdd from "./IssueAdd.jsx";
@@ -6,7 +9,11 @@ import IssueFilter from "./IssueFilter.jsx";
 
 const IssueRow = (props) => (
     <tr>
-        <td>{props.issue._id}</td>
+        <td>
+            <Link to={`/issues/${props.issue._id}`}>
+                {props.issue._id.substr(-4)}
+            </Link>
+        </td>
         <td>{props.issue.status}</td>
         <td>{props.issue.owner}</td>
         <td>{props.issue.created.toDateString()}</td>
@@ -54,9 +61,17 @@ export  default class IssueList extends React.Component{
         this.state = {issues: []};
         // setTimeout(this.createTestIssue.bind(this), 2000);
         this.createIssue = this.createIssue.bind(this);
+        this.setFilter = this.setFilter.bind(this);
     }
+
+    setFilter(query){
+        const search = queryString.stringify(query);
+        // this.props.location.search = search;
+        this.props.history.push({ pathname: this.props.location.pathname, search });
+    }
+
     loadData(){
-        fetch('/api/v1/issues').then(res => {
+        fetch(`/api/v1/issues${this.props.location.search}`).then(res => {
             if(res.ok){
                 res.json().then(data => {
                     console.log("record count: ",data._metadata.total_count);
@@ -94,10 +109,18 @@ export  default class IssueList extends React.Component{
         // }, 500);
     }
     componentDidMount(){
+        console.log("componentDidMount");
         this.loadData();
     }
+    componentDidUpdate(prevProps){
+        const oldSearch = prevProps.location.search;
+        const newSearch = this.props.location.search;
+        if(oldSearch !== newSearch){
+            this.loadData();
+        }
+    }
     createIssue(newIssue){
-        fetch('/api/v1/issues', {
+        fetch(`/api/v1/issues`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(newIssue),
@@ -130,15 +153,18 @@ export  default class IssueList extends React.Component{
     render(){
         return (
             <div>
-                <hr/>
-                <h1> Issue Tracker</h1>
-                <IssueFilter/>
+                <IssueFilter setFilter={this.setFilter}/>
                 <hr/>
                 <IssueTable issues={this.state.issues}/>
-                <button onClick={()=>{this.createTestIssue();}}>Add</button>
+                {/*<button onClick={()=>{this.createTestIssue();}}>Add</button>*/}
                 <hr/>
                 <IssueAdd createIssue={this.createIssue}/>
             </div>
         );
     }
 }
+
+IssueList.propTypes = {
+    location: PropTypes.object.isRequired,
+    router: PropTypes.object,
+};

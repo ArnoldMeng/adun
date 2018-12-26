@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 const Issue = require('./issue.js');
+const path = require('path');
 
 
 const app = express();
@@ -51,7 +52,14 @@ client.connect().catch(err => console.log(err));
 
 app.get('/api/v1/issues', (req, res) => {
     let db = client.db(dbName);
-    db.collection(collectionName).find().toArray().then(issues => {
+    const filter = {};
+    if(req.query.status){
+        filter.status = req.query.status;
+    }
+    if (req.query.effort_lte || req.query.effort_gte) filter.effort = {};
+    if (req.query.effort_lte) filter.effort.$lte = parseInt(req.query.effort_lte, 10);
+    if (req.query.effort_gte) filter.effort.$gte = parseInt(req.query.effort_gte, 10);
+    db.collection(collectionName).find(filter).toArray().then(issues => {
         // console.log(issues);
         const metadata = {total_count: issues.length};
         res.json({_metadata: metadata, records: issues});
@@ -91,7 +99,14 @@ app.post('/api/v1/issues', (req, res) => {
     // res.json(newIssue);
 });
 
+// app.get('/favicon.ico', (req, res) => {
+//     // console.log(1);
+//     res.sendFile(path.resolve('static/index.html'));
+// });
 
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve('static/index.html'));
+});
 
 
 app.listen(3000, function () {

@@ -1,3 +1,5 @@
+import ReactDOM from "react-dom";
+import React from "react";
 
 class IssueTable2 extends React.Component{
     render(){
@@ -84,3 +86,10 @@ const issues = [
         title: 'Missing bottom border on panel',
     },
 ];
+
+let contentNode = document.getElementById("content");
+let HelloWorld = <h1> Good morning, my lord! </h1>;
+ReactDOM.render(
+    HelloWorld
+    , contentNode
+);

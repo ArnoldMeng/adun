@@ -1,0 +1,8 @@
+{
+  "server": "sf1.kingss.me",
+  "server_port": 40854,
+  "password": "mdDS27hgKK",
+  "method": "aes-256-cfb",
+  "remarks": "SGP",
+  "timeout": 5
+}

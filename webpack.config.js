@@ -5,7 +5,7 @@ module.exports = {
     mode: 'development',
     entry: {
         app: ['./src/app.jsx'],
-        vendor: ['react', 'react-dom'],
+        vendor: ['react', 'react-dom', 'react-router-dom'],
     },
     output: {
         path: distPath,
@@ -39,6 +39,7 @@ module.exports = {
     devServer: {
         port: 8000,
         contentBase: 'static',
+        historyApiFallback: true,
         proxy: {
             "/api/*": {
                 target: 'http://localhost:3000'
